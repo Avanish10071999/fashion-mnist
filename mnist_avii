@@ -1,0 +1,62 @@
+# Step 1: Install necessary libraries (if not already installed)
+!pip install torch torchvision """command installs the PyTorch library and its torchvision package,"""
+
+# Step 2: Import necessary libraries
+"""torch: The main library for tensor operations.
+datasets and transforms from torchvision: For loading datasets and applying transformations.
+DataLoader: To create data loaders for batching.
+matplotlib.pyplot: For plotting images"""
+
+import torch
+from torchvision import datasets, transforms
+from torch.utils.data import DataLoader
+import matplotlib.pyplot as plt
+
+# Step 3: Define transformations
+"""You define a transformation pipeline that converts images to tensors and normalizes them to have a mean of 0.5 and a standard deviation of 0.5. 
+This is common for improving model training."""
+
+transform = transforms.Compose([
+    transforms.ToTensor(),  # Convert images to PyTorch tensors
+    transforms.Normalize((0.5,), (0.5,))  # Normalize for grayscale images
+])
+
+# Step 4: Load the Fashion MNIST dataset
+"""train=True: Loads the training set.
+train=False: Loads the test set.
+download=True: Downloads the dataset if it’s not already present."""
+
+train_dataset = datasets.FashionMNIST(root='./data', train=True, download=True, transform=transform)
+test_dataset = datasets.FashionMNIST(root='./data', train=False, download=True, transform=transform)
+
+# Step 5: Create DataLoader objects
+"""Data loaders are created for the training and test datasets. They handle batching and shuffling of data. 
+The training data is shuffled to ensure varied batches during training."""
+train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
+test_loader = DataLoader(test_dataset, batch_size=64, shuffle=False)
+
+# Optional: Check the size of the datasets
+"""These lines print the sizes of the training and test datasets, providing a quick check on the data being used."""
+
+print(f'Train dataset size: {len(train_dataset)}')
+print(f'Test dataset size: {len(test_dataset)}')
+
+# Step 6: Visualize some samples from the training set
+"""This function is defined to visualize images. It unnormalizes the image and uses Matplotlib to display it."""
+
+def imshow(img):
+    img = img / 2 + 0.5  # Unnormalize
+    plt.imshow(img.numpy().squeeze(), cmap='gray')
+    plt.show()
+
+# Get a batch of training data
+dataiter = iter(train_loader)
+images, labels = next(dataiter)
+
+# Display 5 images from the batch
+"""A batch of images and labels is retrieved from the training loader.
+The first five images are displayed, and their corresponding labels are printed."""
+
+for i in range(5):
+    imshow(images[i])
+    print(f'Label: {labels[i].item()}')  # Show the corresponding label
